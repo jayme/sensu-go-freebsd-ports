@@ -1,0 +1,36 @@
+#!/bin/sh
+# $FreeBSD: head/sysutils/sensu-go/files/sensu-backend.in jp $
+
+# PROVIDE: sensu-backend
+# REQUIRE: DAEMON
+# BEFORE: LOGIN
+# KEYWORD: shutdown
+
+# Add the following lines to /etc/rc.conf to enable sensu-backend:
+#
+# sensu_backend_enable (bool):	Set to YES to enable sensu-backend
+# 				Default: NO
+# sensu_backend_conf (str):	sensu-backend configuration file
+#				Default: ${PREFIX}/etc/sensu-backend.yml
+
+. /etc/rc.subr
+
+name=sensu_backend
+rcvar=sensu_backend_enable
+load_rc_config ${name}
+
+sensu_backend_bin=/usr/local/bin/sensu-backend
+
+: ${sensu_backend_enable:="NO"}
+: ${sensu_backend_conf:="-c %%PREFIX%%/etc/sensu-backend.yml"}
+
+command=/usr/sbin/daemon
+pidfile="/var/run/sensu-backend.pid"
+command_args="-rfP ${pidfile} ${sensu_backend_bin} start ${sensu_backend_conf} >> /var/log/sensu-backend.log 2>&1"
+
+sensu_backend_prestart() {
+# Have to empty rc_flags so they don't get passed to daemon(8)
+	rc_flags=""
+}
+
+run_rc_command "$1"
