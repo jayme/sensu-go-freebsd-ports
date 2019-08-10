@@ -1,0 +1,5 @@
+Installs sensu-go components (sensu-agent, sensuctl).
+
+sensu-backend is currently not supported.
+
+WWW: https://github.com/sensu/sensu-go/
