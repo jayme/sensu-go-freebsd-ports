@@ -10,8 +10,7 @@ COMMENT=		Installs sensu-go components
 LICENSE=		APACHE20
 
 ONLY_FOR_ARCHS=		amd64 i386
-BUILD_DEPENDS=		bash:shells/bash \
-			git:devel/git
+BUILD_DEPENDS=		bash:shells/bash
 
 USES=			go
 USE_GITHUB=		yes
@@ -32,7 +31,7 @@ SENSU_AGENT_PLIST_FILES=	bin/sensu-agent \
 
 SENSU_CLI_DESC=		Install sensuctl binary
 SENSU_CLI_VARS=		GO_TARGETS+=cli GO_BIN_TARGETS+=sensuctl
-SENSU_CLI_PLIST=	bin/sensuctl
+SENSU_CLI_PLIST_FILES=	bin/sensuctl
 
 SENSU_BACKEND_DESC=	Install sensu-backend daemon
 SENSU_BACKEND_VARS=	GO_TARGETS+=backend GO_BIN_TARGETS+=sensu-backend
