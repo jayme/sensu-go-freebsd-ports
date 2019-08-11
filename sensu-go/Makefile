@@ -44,7 +44,7 @@ SENSU_BACKEND_BROKEN=	Currently not tested under FreeBSD
 .include <bsd.port.options.mk>
 
 .if ${PORT_OPTIONS:MSENSU_BACKEND}
-USE_RC_SUBR+=   sensu-backend
+USE_RC_SUBR+=	sensu-backend
 .endif
 
 do-build:
