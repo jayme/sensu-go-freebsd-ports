@@ -6,142 +6,22 @@
 # This archive contains:
 #
 #	sensu-go
-#	sensu-go/Makefile
-#	sensu-go/pkg-message
 #	sensu-go/files
-#	sensu-go/files/sensu-backend.in
 #	sensu-go/files/sensu-agent.yml.example
-#	sensu-go/files/sensu-agent.in
 #	sensu-go/files/sensu-backend.yml.example
+#	sensu-go/files/sensu-backend.in
+#	sensu-go/files/sensu-agent.in
+#	sensu-go/pkg-message
 #	sensu-go/distinfo
+#	sensu-go/Makefile
 #	sensu-go/pkg-descr
 #
 echo c - sensu-go
 mkdir -p sensu-go > /dev/null 2>&1
-echo x - sensu-go/Makefile
-sed 's/^X//' >sensu-go/Makefile << 'END-of-sensu-go/Makefile'
-X# $FreeBSD$
-X
-XPORTNAME=		sensu-go
-XDISTVERSION=	5.11.1
-XCATEGORIES=		sysutils
-X
-XMAINTAINER=		jp+ports@supplntr.io
-XCOMMENT=		Installs sensu-go components
-X
-XLICENSE=		APACHE20
-X
-XONLY_FOR_ARCHS=		amd64 i386
-XBUILD_DEPENDS=		bash:shells/bash
-X
-XUSES=			go
-XUSE_GITHUB=		yes
-XGH_PROJECT=		sensu-go
-XGH_ACCOUNT=		sensu
-X
-XGO_PKGNAME=		github.com/${GH_ACCOUNT}/${GH_PROJECT}
-X
-XOPTIONS_DEFINE=		SENSU_AGENT SENSU_CLI SENSU_BACKEND
-XOPTIONS_DEFAULT=	SENSU_AGENT
-XOPTIONS_SUB=		yes
-X
-XSENSU_AGENT_DESC=	Install sensu-agent daemon
-XSENSU_AGENT_VARS=	GO_TARGETS+=agent GO_BIN_TARGETS+=sensu-agent
-XSENSU_AGENT_PLIST_FILES=	bin/sensu-agent \
-X				etc/rc.d/sensu-agent \
-X				etc/sensu-agent.yml.example
-XUSE_RC_SUBR+=	sensu-agent
-X
-XSENSU_CLI_DESC=		Install sensuctl binary
-XSENSU_CLI_VARS=		GO_TARGETS+=cli GO_BIN_TARGETS+=sensuctl
-XSENSU_CLI_PLIST_FILES=	bin/sensuctl
-X
-XSENSU_BACKEND_DESC=	Install sensu-backend daemon (unsupported)
-XSENSU_BACKEND_VARS=	GO_TARGETS+=backend GO_BIN_TARGETS+=sensu-backend
-XSENSU_BACKEND_PLIST_FILES=	bin/sensu-backend \
-X				etc/rc.d/sensu-backend \
-X				etc/sensu-backend.yml.example
-XSENSU_BACKEND_BROKEN=	Currently not tested under FreeBSD
-XUSE_RC_SUBR+=	sensu-backend
-X
-X.include <bsd.port.options.mk>
-X
-Xdo-build:
-X.for GO_TARGET in ${GO_TARGETS}
-X	@(cd ${GO_WRKSRC}; ${SETENV} ${MAKE_ENV} ${GO_ENV} ./build.sh build_${GO_TARGET})
-X.endfor
-X
-Xdo-install:
-X.for GO_BIN_TARGET in ${GO_BIN_TARGETS}
-X	${INSTALL_PROGRAM} ${GO_WRKSRC}/target/freebsd-${ARCH}/${GO_BIN_TARGET} ${STAGEDIR}${PREFIX}/bin
-X.endfor
-X
-X.if ${PORT_OPTIONS:MSENSU_AGENT}
-X	${INSTALL_DATA} ${PATCHDIR}/sensu-agent.yml.example \
-X		${STAGEDIR}${PREFIX}/etc/sensu-agent.yml.example
-X.endif
-X
-X.if ${PORT_OPTIONS:MSENSU_BACKEND}
-X	${INSTALL_DATA} ${PATCHDIR}/sensu-backend.yml.example \
-X		${STAGEDIR}${PREFIX}/etc/sensu-backend.yml.example
-X.endif
-X
-X.include <bsd.port.mk>
-END-of-sensu-go/Makefile
-echo x - sensu-go/pkg-message
-sed 's/^X//' >sensu-go/pkg-message << 'END-of-sensu-go/pkg-message'
-X###########################################################################
-X#
-X# Sample sensu-agent configuration files are installed at
-X#
-X#     PREFIX/etc/sensu-agent.yml.example
-X#
-X#
-X###########################################################################
-END-of-sensu-go/pkg-message
 echo c - sensu-go/files
 mkdir -p sensu-go/files > /dev/null 2>&1
-echo x - sensu-go/files/sensu-backend.in
-sed 's/^X//' >sensu-go/files/sensu-backend.in << 'END-of-sensu-go/files/sensu-backend.in'
-X#!/bin/sh
-X# $FreeBSD: head/sysutils/sensu-go/files/sensu-backend.in jp $
-X
-X# PROVIDE: sensu-backend
-X# REQUIRE: DAEMON
-X# BEFORE: LOGIN
-X# KEYWORD: shutdown
-X
-X# Add the following lines to /etc/rc.conf to enable sensu-backend:
-X#
-X# sensu_backend_enable (bool):	Set to YES to enable sensu-backend
-X# 				Default: NO
-X# sensu_backend_conf (str):	sensu-backend configuration file
-X#				Default: ${PREFIX}/etc/sensu-backend.yml
-X
-X. /etc/rc.subr
-X
-Xname=sensu_backend
-Xrcvar=sensu_backend_enable
-Xload_rc_config ${name}
-X
-Xsensu_backend_bin=/usr/local/bin/sensu-backend
-X
-X: ${sensu_backend_enable:="NO"}
-X: ${sensu_backend_conf:="-c %%PREFIX%%/etc/sensu-backend.yml"}
-X
-Xcommand=/usr/sbin/daemon
-Xpidfile="/var/run/sensu-backend.pid"
-Xcommand_args="-rfP ${pidfile} ${sensu_backend_bin} start ${sensu_backend_conf} >> /var/log/sensu-backend.log 2>&1"
-X
-Xsensu_backend_prestart() {
-X# Have to empty rc_flags so they don't get passed to daemon(8)
-X	rc_flags=""
-X}
-X
-Xrun_rc_command "$1"
-END-of-sensu-go/files/sensu-backend.in
 echo x - sensu-go/files/sensu-agent.yml.example
-sed 's/^X//' >sensu-go/files/sensu-agent.yml.example << 'END-of-sensu-go/files/sensu-agent.yml.example'
+sed 's/^X//' >sensu-go/files/sensu-agent.yml.example << 'e551fd5983ecb60fc6ea86562f50c673'
 X---
 X# Sensu agent configuration
 X
@@ -221,48 +101,9 @@ X#  - example_handler
 X#statsd-flush-interval: 10
 X#statsd-metrics-host: "127.0.0.1"
 X#statsd-metrics-port: 8125
-END-of-sensu-go/files/sensu-agent.yml.example
-echo x - sensu-go/files/sensu-agent.in
-sed 's/^X//' >sensu-go/files/sensu-agent.in << 'END-of-sensu-go/files/sensu-agent.in'
-X#!/bin/sh
-X# $FreeBSD: head/sysutils/sensu-go/files/sensu-agent.in jp $
-X
-X# PROVIDE: sensu-agent
-X# REQUIRE: DAEMON
-X# BEFORE: LOGIN
-X# KEYWORD: shutdown
-X
-X# Add the following lines to /etc/rc.conf to enable sensu-agent:
-X#
-X# sensu_agent_enable (bool):	Set to YES to enable sensu-agent
-X# 				Default: NO
-X# sensu_agent_conf (str):	sensu-agent configuration file
-X#				Default: ${PREFIX}/etc/sensu-agent.yml
-X
-X. /etc/rc.subr
-X
-Xname=sensu_agent
-Xrcvar=sensu_agent_enable
-Xload_rc_config ${name}
-X
-Xsensu_agent_bin=/usr/local/bin/sensu-agent
-X
-X: ${sensu_agent_enable:="NO"}
-X: ${sensu_agent_conf:="-c %%PREFIX%%/etc/sensu-agent.yml"}
-X
-Xcommand=/usr/sbin/daemon
-Xpidfile="/var/run/sensu-agent.pid"
-Xcommand_args="-rfP ${pidfile} ${sensu_agent_bin} start ${sensu_agent_conf} >> /var/log/sensu-agent.log 2>&1"
-X
-Xsensu_agent_prestart() {
-X# Have to empty rc_flags so they don't get passed to daemon(8)
-X	rc_flags=""
-X}
-X
-Xrun_rc_command "$1"
-END-of-sensu-go/files/sensu-agent.in
+e551fd5983ecb60fc6ea86562f50c673
 echo x - sensu-go/files/sensu-backend.yml.example
-sed 's/^X//' >sensu-go/files/sensu-backend.yml.example << 'END-of-sensu-go/files/sensu-backend.yml.example'
+sed 's/^X//' >sensu-go/files/sensu-backend.yml.example << '42e6eebf719edf956f6f1470dc054b6a'
 X---
 X# Sensu backend configuration
 X
@@ -326,20 +167,181 @@ X#etcd-trusted-ca-file: "/path/to/ssl/key.pem"
 X#no-embed-etcd: false
 X#etcd-cipher-suites
 X#  - TLS_EXAMPLE
-END-of-sensu-go/files/sensu-backend.yml.example
+42e6eebf719edf956f6f1470dc054b6a
+echo x - sensu-go/files/sensu-backend.in
+sed 's/^X//' >sensu-go/files/sensu-backend.in << 'c053ffe3ab9851041e44f660705467eb'
+X#!/bin/sh
+X# $FreeBSD: head/sysutils/sensu-go/files/sensu-backend.in jp $
+X
+X# PROVIDE: sensu-backend
+X# REQUIRE: DAEMON
+X# BEFORE: LOGIN
+X# KEYWORD: shutdown
+X
+X# Add the following lines to /etc/rc.conf to enable sensu-backend:
+X#
+X# sensu_backend_enable (bool):	Set to YES to enable sensu-backend
+X# 				Default: NO
+X# sensu_backend_conf (str):	sensu-backend configuration file
+X#				Default: ${PREFIX}/etc/sensu-backend.yml
+X
+X. /etc/rc.subr
+X
+Xname=sensu_backend
+Xrcvar=sensu_backend_enable
+Xload_rc_config ${name}
+X
+Xsensu_backend_bin=/usr/local/bin/sensu-backend
+X
+X: ${sensu_backend_enable:="NO"}
+X: ${sensu_backend_conf:="-c %%PREFIX%%/etc/sensu-backend.yml"}
+X
+Xcommand=/usr/sbin/daemon
+Xpidfile="/var/run/sensu-backend.pid"
+Xcommand_args="-rfP ${pidfile} ${sensu_backend_bin} start ${sensu_backend_conf} >> /var/log/sensu-backend.log 2>&1"
+X
+Xsensu_backend_prestart() {
+X# Have to empty rc_flags so they don't get passed to daemon(8)
+X	rc_flags=""
+X}
+X
+Xrun_rc_command "$1"
+c053ffe3ab9851041e44f660705467eb
+echo x - sensu-go/files/sensu-agent.in
+sed 's/^X//' >sensu-go/files/sensu-agent.in << '968205d1df98d2b094d20dda9e0d5884'
+X#!/bin/sh
+X# $FreeBSD: head/sysutils/sensu-go/files/sensu-agent.in jp $
+X
+X# PROVIDE: sensu-agent
+X# REQUIRE: DAEMON
+X# BEFORE: LOGIN
+X# KEYWORD: shutdown
+X
+X# Add the following lines to /etc/rc.conf to enable sensu-agent:
+X#
+X# sensu_agent_enable (bool):	Set to YES to enable sensu-agent
+X# 				Default: NO
+X# sensu_agent_conf (str):	sensu-agent configuration file
+X#				Default: ${PREFIX}/etc/sensu-agent.yml
+X
+X. /etc/rc.subr
+X
+Xname=sensu_agent
+Xrcvar=sensu_agent_enable
+Xload_rc_config ${name}
+X
+Xsensu_agent_bin=/usr/local/bin/sensu-agent
+X
+X: ${sensu_agent_enable:="NO"}
+X: ${sensu_agent_conf:="-c %%PREFIX%%/etc/sensu-agent.yml"}
+X
+Xcommand=/usr/sbin/daemon
+Xpidfile="/var/run/sensu-agent.pid"
+Xcommand_args="-rfP ${pidfile} ${sensu_agent_bin} start ${sensu_agent_conf} >> /var/log/sensu-agent.log 2>&1"
+X
+Xsensu_agent_prestart() {
+X# Have to empty rc_flags so they don't get passed to daemon(8)
+X	rc_flags=""
+X}
+X
+Xrun_rc_command "$1"
+968205d1df98d2b094d20dda9e0d5884
+echo x - sensu-go/pkg-message
+sed 's/^X//' >sensu-go/pkg-message << '49a8ac907a97f4cd7141ac79e6a41193'
+X###########################################################################
+X#
+X# Sample sensu-agent configuration files are installed at
+X#
+X#     PREFIX/etc/sensu-agent.yml.example
+X#
+X#
+X###########################################################################
+49a8ac907a97f4cd7141ac79e6a41193
 echo x - sensu-go/distinfo
-sed 's/^X//' >sensu-go/distinfo << 'END-of-sensu-go/distinfo'
+sed 's/^X//' >sensu-go/distinfo << '77312ee5065ddd001d33ad5173905a68'
 XTIMESTAMP = 1565378801
 XSHA256 (sensu-sensu-go-5.11.1_GH0.tar.gz) = 62ca30e2b81903ba303fb4aa826b03d6c37347245e75a92be7014667dfb8d2da
 XSIZE (sensu-sensu-go-5.11.1_GH0.tar.gz) = 9351307
-END-of-sensu-go/distinfo
+77312ee5065ddd001d33ad5173905a68
+echo x - sensu-go/Makefile
+sed 's/^X//' >sensu-go/Makefile << 'dd30bfcbd99e0dc4a766b1b3c1719fd5'
+X# $FreeBSD$
+X
+XPORTNAME=		sensu-go
+XDISTVERSION=	5.11.1
+XCATEGORIES=		sysutils
+X
+XMAINTAINER=		jp+ports@supplntr.io
+XCOMMENT=		Installs sensu-go components
+X
+XLICENSE=		APACHE20
+X
+XONLY_FOR_ARCHS=		amd64 i386
+XBUILD_DEPENDS=		bash:shells/bash
+X
+XUSES=			go
+XUSE_GITHUB=		yes
+XGH_PROJECT=		sensu-go
+XGH_ACCOUNT=		sensu
+X
+XGO_PKGNAME=		github.com/${GH_ACCOUNT}/${GH_PROJECT}
+X
+XOPTIONS_DEFINE=		SENSU_AGENT SENSU_CLI SENSU_BACKEND
+XOPTIONS_DEFAULT=	SENSU_AGENT
+XOPTIONS_SUB=		yes
+X
+XSENSU_AGENT_DESC=	Install sensu-agent daemon
+XSENSU_AGENT_VARS=	GO_TARGETS+=agent GO_BIN_TARGETS+=sensu-agent
+XSENSU_AGENT_PLIST_FILES=	bin/sensu-agent \
+X				etc/rc.d/sensu-agent \
+X				etc/sensu-agent.yml.example
+XUSE_RC_SUBR+=	sensu-agent
+X
+XSENSU_CLI_DESC=		Install sensuctl binary
+XSENSU_CLI_VARS=		GO_TARGETS+=cli GO_BIN_TARGETS+=sensuctl
+XSENSU_CLI_PLIST_FILES=	bin/sensuctl
+X
+XSENSU_BACKEND_DESC=	Install sensu-backend daemon (unsupported)
+XSENSU_BACKEND_VARS=	GO_TARGETS+=backend GO_BIN_TARGETS+=sensu-backend
+XSENSU_BACKEND_PLIST_FILES=	bin/sensu-backend \
+X				etc/rc.d/sensu-backend \
+X				etc/sensu-backend.yml.example
+XSENSU_BACKEND_BROKEN=	Currently not tested under FreeBSD
+X
+X.include <bsd.port.options.mk>
+X
+X.if ${PORT_OPTIONS:MSENSU_BACKEND}
+XUSE_RC_SUBR+=   sensu-backend
+X.endif
+X
+Xdo-build:
+X.for GO_TARGET in ${GO_TARGETS}
+X	@(cd ${GO_WRKSRC}; ${SETENV} ${MAKE_ENV} ${GO_ENV} ./build.sh build_${GO_TARGET})
+X.endfor
+X
+Xdo-install:
+X.for GO_BIN_TARGET in ${GO_BIN_TARGETS}
+X	${INSTALL_PROGRAM} ${GO_WRKSRC}/target/freebsd-${ARCH}/${GO_BIN_TARGET} ${STAGEDIR}${PREFIX}/bin
+X.endfor
+X
+X.if ${PORT_OPTIONS:MSENSU_AGENT}
+X	${INSTALL_DATA} ${PATCHDIR}/sensu-agent.yml.example \
+X		${STAGEDIR}${PREFIX}/etc/sensu-agent.yml.example
+X.endif
+X
+X.if ${PORT_OPTIONS:MSENSU_BACKEND}
+X	${INSTALL_DATA} ${PATCHDIR}/sensu-backend.yml.example \
+X		${STAGEDIR}${PREFIX}/etc/sensu-backend.yml.example
+X.endif
+X
+X.include <bsd.port.mk>
+dd30bfcbd99e0dc4a766b1b3c1719fd5
 echo x - sensu-go/pkg-descr
-sed 's/^X//' >sensu-go/pkg-descr << 'END-of-sensu-go/pkg-descr'
+sed 's/^X//' >sensu-go/pkg-descr << 'a351750fde52c2328a709f872c7e1b67'
 XInstalls sensu-go components (sensu-agent, sensuctl).
 X
 Xsensu-backend is currently not supported.
 X
 XWWW: https://github.com/sensu/sensu-go/
-END-of-sensu-go/pkg-descr
+a351750fde52c2328a709f872c7e1b67
 exit
-

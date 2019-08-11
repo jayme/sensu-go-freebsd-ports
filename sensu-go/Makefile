@@ -40,9 +40,12 @@ SENSU_BACKEND_PLIST_FILES=	bin/sensu-backend \
 				etc/rc.d/sensu-backend \
 				etc/sensu-backend.yml.example
 SENSU_BACKEND_BROKEN=	Currently not tested under FreeBSD
-USE_RC_SUBR+=	sensu-backend
 
 .include <bsd.port.options.mk>
+
+.if ${PORT_OPTIONS:MSENSU_BACKEND}
+USE_RC_SUBR+=   sensu-backend
+.endif
 
 do-build:
 .for GO_TARGET in ${GO_TARGETS}
